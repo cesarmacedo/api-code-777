@@ -178,7 +178,6 @@ module.exports = function() {
                     conexao.execSQLQuery("UPDATE `app`.`news` SET `TITLE` = ?,`NEWS` = ?,\
                     `UPDATE_DATE` = NOW(),`UPDATE_USER` = ? WHERE `ID` = ? AND IND_STATUS = 1",parameters)
                     .then(function(result){
-                        console.log(result)
                         if(result.affectedRows > 0){
                             logger.log('info', '[business-newsnBO] update news successfully.');
                             let resultReturn = {status:204,body:""}
@@ -221,9 +220,9 @@ module.exports = function() {
                         let result = {status:422,body:'The id parameter is required'}
                        return reject(result);
                     }
-                    let parameters = [req.params.id]
+                    let parameters = [rtoken.id,req.params.id,]
 
-                    conexao.execSQLQuery("UPDATE `app`.`news` SET `IND_STATUS` = 0 WHERE ID = ? AND IND_STATUS = 1",parameters)
+                    conexao.execSQLQuery("UPDATE `app`.`news` SET `IND_STATUS` = 0, DELETE_USER = ?, DELETE_DATE = NOW() WHERE ID = ? AND IND_STATUS = 1",parameters)
                     .then(function(result){
                         if(result.affectedRows > 0){
                             logger.log('info', '[business-newsnBO] The deleteById method deleted the requested id.');
