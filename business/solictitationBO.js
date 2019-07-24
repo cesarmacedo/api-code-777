@@ -16,13 +16,13 @@ module.exports = function() {
                 }catch(error){
                     logger.log('info', '[business-solictitationBO] error decoding the token.');
                     let result = {status:500,body:error}
-                    reject(result);
+                    return reject(result); 
                 }
                 
                 if(!req.body.title || !req.body.request){
                     logger.log('info', '[business-solictitationBO] Required fields are empty.');
                     let result = {status:422,body:'Fill in the required fields.'}
-                    reject(result);
+                    return reject(result);
                 }
                 
                 let parameter = [req.body.title,req.body.request,1,rtoken.id];
@@ -34,12 +34,12 @@ module.exports = function() {
                     if(result.affectedRows){
                         logger.log('info', '[business-solictitationBO] post solictitation successfully created.');
                         let resultReturn = {status:204,body:""}
-                        resolve(resultReturn);
+                        return resolve(resultReturn);
                     }
                 }).catch(function (erro) {
                     logger.log('error', '[business-solictitationBO] There was an error inserting the solictitation.', erro);
                     let result = {status:500,body:erro}
-                    reject(result);
+                    return reject(result);
                 });
                 
             })
@@ -52,7 +52,7 @@ module.exports = function() {
                     if(!req.query.results || !req.query.page){
                         logger.log('info', '[business-solictitationBO] Required fields are empty.');
                         let result = {status:422,body:'O numero de resultados e a pagina são obrigatorios.'}
-                        reject(result);
+                        return reject(result);
                     }
                     let parameters = [req.query.results,req.query.page,req.query.title]
                     conexao.execSQLQuery("CALL `app`.`Proc_Solicitations_Pagination`(?,?,?)",parameters)
@@ -61,7 +61,7 @@ module.exports = function() {
                             logger.log('info', '[business-solictitationBO] Method getAll return solictitation.');
                             let resultReturn = {status:200,body:result[0]}
                             logger.log('info', '[business-solictitationBO] Method getAll ending.');
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }else{
                             let resultReturn = {status:200,body:[]}
                             resolve(resultReturn);
@@ -69,11 +69,11 @@ module.exports = function() {
                     }).catch(function (erro) {
                         logger.log('error', '[business-solictitationBO] There was an error return the getAll.', erro);
                         let result = {status:500,body:erro}
-                        reject(result);
+                        return reject(result);
                     });
                 }catch(error){
                     let result = {status:500,body:error}
-                    reject(result);
+                    return reject(result);
                 }
             });
         },
@@ -82,31 +82,40 @@ module.exports = function() {
             logger.log('info', '[business-solictitationBO] Method getById started.');
             return new Promise(function(resolve, reject){
                 try{
+
                     if(!req.params.id){
                         logger.log('info', '[business-solictitationBO] Required fields are empty.');
-                        let result = {status:422,body:'É obrigatorio informar o Id.'}
-                        reject(result);
+                        let result = {status:422,body:'It is mandatory to enter the parameter Id.'}
+                        return reject(result);
                     }
+
+                    if(!Number.isInteger(req.params.id)){
+                        logger.log('info', '[business-commentSolicitationBO] Field solicitationId is invalid');
+                        let result = {status:422,body:'requestitationId must be an integer.'}
+                        return reject(result);
+                    }
+
                     let parameters = [req.params.id]
+
                     conexao.execSQLQuery("SELECT * FROM REQUESTS WHERE ID = ? AND IND_STATUS = 1",parameters)
                     .then(function(result){
                         if(result.length){
                             logger.log('info', '[business-solictitationBO] Method getById return solictitation.');
                             let resultReturn = {status:200,body:result}
                             logger.log('info', '[business-solictitationBO] Method getById ending.');
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }else{
                             let resultReturn = {status:200,body:[]}
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }
                     }).catch(function (erro) {
                         logger.log('error', '[business-solictitationBO] There was an error return the getById.', erro);
                         let result = {status:500,body:erro}
-                        reject(result);
+                        return reject(result);
                     });
                 }catch(error){
                     let result = {status:500,body:error}
-                    reject(result);
+                    return reject(result);
                 }
             });
         },
@@ -131,10 +140,23 @@ module.exports = function() {
                     if(!req.body.title || !req.body.request){
                         logger.log('info', '[business-solictitationBO] Required fields are empty.');
                         let result = {status:422,body:'Fill in the required fields.'}
-                        reject(result);
+                        return reject(result);
+                    }
+
+                    if(!req.params.id){
+                        logger.log('info', '[business-solictitationBO] Required fields are empty.');
+                        let result = {status:422,body:'It is mandatory to enter the parameter Id.'}
+                        return reject(result);
+                    }
+
+                    if(!Number.isInteger(req.params.id)){
+                        logger.log('info', '[business-commentSolicitationBO] Field solicitationId is invalid');
+                        let result = {status:422,body:'requestitationId must be an integer.'}
+                        return reject(result);
                     }
 
                     let parameters = [req.body.title,req.body.request,rtoken.id,req.params.id]
+
                     conexao.execSQLQuery("UPDATE `app`.`requests` SET `TITLE` = ?, `REQUEST` = ?,\
                     `UPDATE_USER` = ?,`UPDATE_DATE` = NOW() WHERE `ID` = ? AND IND_STATUS = 1 AND STATUS = 1",parameters)
                     .then(function(result){
@@ -179,10 +201,24 @@ module.exports = function() {
                     if(!req.body.status || !req.body.status == 1){
                         logger.log('info', '[business-solictitationBO] Required fields are empty or status equal to 1');
                         let result = {status:422,body:'Fill in the required fields or enter status other than 1'}
-                        reject(result);
+                        return reject(result);
                     }
 
+                    if(!req.params.id){
+                        logger.log('info', '[business-solictitationBO] Required fields are empty.');
+                        let result = {status:422,body:'It is mandatory to enter the parameter Id.'}
+                        return reject(result);
+                    }
+
+                    if(!Number.isInteger(req.params.id)){
+                        logger.log('info', '[business-commentSolicitationBO] Field solicitationId is invalid');
+                        let result = {status:422,body:'requestitationId must be an integer.'}
+                        return reject(result);
+                    }
+
+
                     let parameters = [req.body.title,req.body.request,rtoken.id,req.params.id]
+
                     conexao.execSQLQuery("UPDATE `app`.`requests` SET `STATUS` = ?, `UPDATE_USER` = ?,\
                     `UPDATE_DATE` = NOW() WHERE `ID` = ? AND IND_STATUS = 2",parameters)
                     .then(function(result){
@@ -228,6 +264,13 @@ module.exports = function() {
                         let result = {status:422,body:'The id parameter is required'}
                        return reject(result);
                     }
+
+                    if(!Number.isInteger(req.params.id)){
+                        logger.log('info', '[business-commentSolicitationBO] Field solicitationId is invalid');
+                        let result = {status:422,body:'requestitationId must be an integer.'}
+                        return reject(result);
+                    }
+
                     let parameters = [rtoken.id,req.params.id,]
 
                     conexao.execSQLQuery("UPDATE `app`.`requests` SET `IND_STATUS` = 0, DELETE_USER = ?,\

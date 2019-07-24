@@ -5,21 +5,21 @@ module.exports = function(app) {
     var helper = new Helper();
    
     app.route('/v1/news')
-        .post(controller.add)
+        .post(helper.verifyToken,controller.add)
 
     app.route('/v1/news/last')
-        .get(controller.getLastNews)
+        .get(helper.verifyToken,controller.getLastNews)
 
     app.route('/v1/news')
-        .get(controller.getAll)
+        .get(helper.verifyToken,controller.getAll)
 
     app.route('/v1/news/:id')
-        .get(controller.getById)
+        .get(helper.verifyToken,controller.getById)
     
     app.route('/v1/news/:id')
-        .put(controller.updateById)
+        .put(helper.verifyToken,controller.updateById)
     
     app.route('/v1/news/:id')
-        .delete(controller.deleteById)
+        .delete(helper.verifyToken,controller.deleteById)
     
 }

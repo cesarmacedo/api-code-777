@@ -128,7 +128,14 @@ module.exports = function() {
                         return reject(result);
                     }
 
+                    if(!Number.isInteger(req.params.id)){
+                        logger.log('info', '[business-commentSolicitationBO] Field solicitationId is invalid');
+                        let result = {status:422,body:'requestitationId must be an integer.'}
+                        return reject(result);
+                    }
+
                     let parameters = [req.params.id]
+                    
                     conexao.execSQLQuery("SELECT * FROM NEWS WHERE ID = ? AND IND_STATUS = 1",parameters)
                     .then(function(result){
                         if(result.length){
@@ -174,7 +181,14 @@ module.exports = function() {
                         return reject(result);
                     }
 
+                    if(!Number.isInteger(req.params.id)){
+                        logger.log('info', '[business-commentSolicitationBO] Field solicitationId is invalid');
+                        let result = {status:422,body:'requestitationId must be an integer.'}
+                        return reject(result);
+                    }
+
                     let parameters = [req.body.title,req.body.news,rtoken.id,req.params.id]
+
                     conexao.execSQLQuery("UPDATE `app`.`news` SET `TITLE` = ?,`NEWS` = ?,\
                     `UPDATE_DATE` = NOW(),`UPDATE_USER` = ? WHERE `ID` = ? AND IND_STATUS = 1",parameters)
                     .then(function(result){
@@ -220,6 +234,13 @@ module.exports = function() {
                         let result = {status:422,body:'The id parameter is required'}
                        return reject(result);
                     }
+
+                    if(!Number.isInteger(req.params.id)){
+                        logger.log('info', '[business-commentSolicitationBO] Field solicitationId is invalid');
+                        let result = {status:422,body:'requestitationId must be an integer.'}
+                        return reject(result);
+                    }
+
                     let parameters = [rtoken.id,req.params.id,]
 
                     conexao.execSQLQuery("UPDATE `app`.`news` SET `IND_STATUS` = 0, DELETE_USER = ?, DELETE_DATE = NOW() WHERE ID = ? AND IND_STATUS = 1",parameters)

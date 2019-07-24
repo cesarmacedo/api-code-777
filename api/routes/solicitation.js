@@ -5,12 +5,12 @@ module.exports = function(app) {
     var helper = new Helper();
    
     app.route('/v1/solicitation')
-        .post(controller.add)
+        .post(helper.verifyToken,controller.add)
 
     app.route('/v1/solicitation')
-        .get(controller.getAll)
+        .get(helper.verifyToken,controller.getAll)
 
     app.route('/v1/solicitation/:id')
-        .get(controller.getById)
+        .get(helper.verifyToken,controller.getById)
     
 }

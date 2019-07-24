@@ -6,11 +6,11 @@ module.exports = function() {
             var chain = Promise.resolve();
             chain
             .then(function(){
-                var token = req.headers.authorization;
+                let token = req.headers.authorization;
                 logger.log('info','[jwtHelper] Validating authentication token');
                 if (!token || token === ''){
                     logger.error('[jwtHelper] The token does not exist or is empty');
-                    throw {code: 403, message: 'The token does not exist or is empty'};
+                    throw {code: 403, body: 'The token does not exist or is empty'};
                 } else {
                     return token;
                 }
@@ -20,12 +20,13 @@ module.exports = function() {
                     if (error){
                         throw error;
                     }
-                    logger.log('[jwtHelper] The token is valid with payload token: ' + JSON.stringify(decoded));
+                    logger.log('[jwtHelper] The token is valid with payload token: ', JSON.stringify(decoded));
                     next();
                 });
             })
             .catch(function(error){
-                logger.log('info','[jwtHelper] An error occurred: ' + JSON.stringify(error));
+                console.log(error)
+                logger.log('info','[jwtHelper] An error occurred: ', JSON.stringify(error));
                 if (error.code || error.code === 403){
                     res.status(403).json({});
                 }
