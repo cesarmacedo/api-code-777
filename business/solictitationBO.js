@@ -25,7 +25,7 @@ module.exports = function() {
                     reject(result);
                 }
                 
-                let parameter = [req.body.title,req.body.request,0,rtoken.id];
+                let parameter = [req.body.title,req.body.request,1,rtoken.id];
 
                 conexao.execSQLQuery('INSERT INTO `app`.`requests` (`TITLE`,`REQUEST`,`STATUS`,`CREATE_USER`,\
                 `UPDATE_USER`,`DELETE_USER`,`CREATE_DATE`,`UPDATE_DATE`,`DELETE_DATE`,`IND_STATUS`) VALUES\
@@ -111,7 +111,7 @@ module.exports = function() {
             });
         },
 
-        updateById: function(req){4
+        updateById: function(req){
             logger.log('info', '[business-solictitationBO] Method updateById started.');
             return new Promise(function(resolve, reject){
                 try{
@@ -136,7 +136,7 @@ module.exports = function() {
 
                     let parameters = [req.body.title,req.body.request,rtoken.id,req.params.id]
                     conexao.execSQLQuery("UPDATE `app`.`requests` SET `TITLE` = ?, `REQUEST` = ?,\
-                    `UPDATE_USER` = ?,`UPDATE_DATE` = NOW() WHERE `ID` = ? AND IND_STATUS = 1 AND STATUS = 0",parameters)
+                    `UPDATE_USER` = ?,`UPDATE_DATE` = NOW() WHERE `ID` = ? AND IND_STATUS = 1 AND STATUS = 1",parameters)
                     .then(function(result){
                         if(result.affectedRows > 0){
                             logger.log('info', '[business-solictitationBO] update requests successfully.');
@@ -149,6 +149,54 @@ module.exports = function() {
                         }
                     }).catch(function (erro) {
                         logger.log('error', '[business-solictitationBO] There was an error return the updateById.', erro);
+                        let result = {status:500,body:erro}
+                        return reject(result);
+                    });
+                }catch(error){
+                    let result = {status:500,body:error}
+                    return reject(result);
+                }
+            });
+        },
+
+        updateStatusById: function(req){
+            logger.log('info', '[business-solictitationBO] Method updateStatusById started.');
+            return new Promise(function(resolve, reject){
+                try{
+                    
+                    let token = req.headers.authorization;
+                    
+                    try{
+                        logger.log('info', '[business-solictitationBO] decoding token.');
+                        rtoken = jwthelper.decodedToken(token)
+                    }catch(error){
+                        logger.log('info', '[business-solictitationBO] error decoding the token.');
+                        let result = {status:500,body:error}
+                        return reject(result);
+                    }
+
+
+                    if(!req.body.status || !req.body.status == 1){
+                        logger.log('info', '[business-solictitationBO] Required fields are empty or status equal to 1');
+                        let result = {status:422,body:'Fill in the required fields or enter status other than 1'}
+                        reject(result);
+                    }
+
+                    let parameters = [req.body.title,req.body.request,rtoken.id,req.params.id]
+                    conexao.execSQLQuery("UPDATE `app`.`requests` SET `STATUS` = ?, `UPDATE_USER` = ?,\
+                    `UPDATE_DATE` = NOW() WHERE `ID` = ? AND IND_STATUS = 2",parameters)
+                    .then(function(result){
+                        if(result.affectedRows > 0){
+                            logger.log('info', '[business-solictitationBO] update status successfully.');
+                            let resultReturn = {status:204,body:""}
+                            return resolve(resultReturn);
+                        }else{
+                            logger.log('info', '[business-solictitationBO] update status successfully.');
+                            let resultReturn = {status:204,body:""}
+                            return resolve(resultReturn);
+                        }
+                    }).catch(function (erro) {
+                        logger.log('error', '[business-solictitationBO] There was an error return the updateStatusById.', erro);
                         let result = {status:500,body:erro}
                         return reject(result);
                     });
