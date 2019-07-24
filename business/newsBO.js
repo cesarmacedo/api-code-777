@@ -34,12 +34,12 @@ module.exports = function() {
                     if(result.affectedRows){
                         logger.log('info', '[business-newsBO] post news successfully created.');
                         let resultReturn = {status:204,body:""}
-                        resolve(resultReturn);
+                        return resolve(resultReturn);
                     }
                 }).catch(function (erro) {
                     logger.log('error', '[business-news] There was an error inserting the notice.', erro);
                     let result = {status:500,body:erro}
-                    reject(result);
+                    return returnreject(result);
                 });
                 
             })
@@ -56,19 +56,19 @@ module.exports = function() {
                         if(result.length){
                             logger.log('info', '[business-newsBO] Method getLastNews return last news.');
                             let resultReturn = {status:200,body:result}
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }else{
                             let resultReturn = {status:200,body:""}
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }
                     }).catch(function (erro) {
                         logger.log('error', '[business-news] There was an error return the getLastNews.', erro);
                         let result = {status:500,body:erro}
-                        reject(result);
+                        return reject(result);
                     });
                 }catch(error){
                     let result = {status:500,body:error}
-                    reject(result);
+                    return reject(result);
                 }
             });
         },
@@ -80,7 +80,7 @@ module.exports = function() {
                     if(!req.query.results || !req.query.page){
                         logger.log('info', '[business-newsnBO] Required fields are empty.');
                         let result = {status:422,body:'O numero de resultados e a pagina são obrigatorios.'}
-                        reject(result);
+                        return reject(result);
                     }
                     let parameters = [req.query.results,req.query.page,req.query.title]
                     conexao.execSQLQuery("CALL `app`.`Proc_News_Pagination`(?,?,?)",parameters)
@@ -89,19 +89,19 @@ module.exports = function() {
                             logger.log('info', '[business-newsBO] Method getAll return news.');
                             let resultReturn = {status:200,body:result[0]}
                             logger.log('info', '[business-newsBO] Method getAll ending.');
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }else{
                             let resultReturn = {status:200,body:[]}
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }
                     }).catch(function (erro) {
                         logger.log('error', '[business-news] There was an error return the getAll.', erro);
                         let result = {status:500,body:erro}
-                        reject(result);
+                        return reject(result);
                     });
                 }catch(error){
                     let result = {status:500,body:error}
-                    reject(result);
+                    return reject(result);
                 }
             });
         },
@@ -125,7 +125,7 @@ module.exports = function() {
                     if(!req.params.id){
                         logger.log('info', '[business-newsnBO] Required fields are empty.');
                         let result = {status:422,body:'É obrigatorio informar o Id'}
-                        reject(result);
+                        return reject(result);
                     }
 
                     let parameters = [req.params.id]
@@ -135,19 +135,19 @@ module.exports = function() {
                             logger.log('info', '[business-newsnBO] Method getById return solictitation.');
                             let resultReturn = {status:200,body:result}
                             logger.log('info', '[business-newsnBO] Method getById ending.');
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }else{
                             let resultReturn = {status:200,body:[]}
-                            resolve(resultReturn);
+                            return resolve(resultReturn);
                         }
                     }).catch(function (erro) {
                         logger.log('error', '[business-newsnBO] There was an error return the getById.', erro);
                         let result = {status:500,body:erro}
-                        reject(result);
+                        return reject(result);
                     });
                 }catch(error){
                     let result = {status:500,body:error}
-                    reject(result);
+                    return reject(result);
                 }
             });
         },
