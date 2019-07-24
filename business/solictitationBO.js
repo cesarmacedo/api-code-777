@@ -9,13 +9,7 @@ module.exports = function() {
             logger.log('info', '[business-solictitationBO] Method add started.');
             let token = req.headers.authorization
             return new Promise(function (resolve, reject) {
-                
-                if(!req.body.title || !req.body.request){
-                    logger.log('info', '[business-solictitationBO] Required fields are empty.');
-                    let result = {status:422,body:'Preencha os capos obrigatórios.'}
-                    reject(result);
-                }
-                
+
                 try{
                     logger.log('info', '[business-solictitationBO] decoding token.');
                     rtoken = jwthelper.decodedToken(token)
@@ -24,8 +18,14 @@ module.exports = function() {
                     let result = {status:500,body:error}
                     reject(result);
                 }
-
-                let parameter = [req.body.title,req.body.request,1,rtoken.id];
+                
+                if(!req.body.title || !req.body.request){
+                    logger.log('info', '[business-solictitationBO] Required fields are empty.');
+                    let result = {status:422,body:'Fill in the required fields.'}
+                    reject(result);
+                }
+                
+                let parameter = [req.body.title,req.body.request,0,rtoken.id];
 
                 conexao.execSQLQuery('INSERT INTO `app`.`requests` (`TITLE`,`REQUEST`,`STATUS`,`CREATE_USER`,\
                 `UPDATE_USER`,`DELETE_USER`,`CREATE_DATE`,`UPDATE_DATE`,`DELETE_DATE`,`IND_STATUS`) VALUES\
@@ -107,6 +107,101 @@ module.exports = function() {
                 }catch(error){
                     let result = {status:500,body:error}
                     reject(result);
+                }
+            });
+        },
+
+        updateById: function(req){4
+            logger.log('info', '[business-solictitationBO] Method updateById started.');
+            return new Promise(function(resolve, reject){
+                try{
+                    
+                    let token = req.headers.authorization;
+                    
+                    try{
+                        logger.log('info', '[business-solictitationBO] decoding token.');
+                        rtoken = jwthelper.decodedToken(token)
+                    }catch(error){
+                        logger.log('info', '[business-solictitationBO] error decoding the token.');
+                        let result = {status:500,body:error}
+                        return reject(result);
+                    }
+
+
+                    if(!req.body.title || !req.body.request){
+                        logger.log('info', '[business-solictitationBO] Required fields are empty.');
+                        let result = {status:422,body:'Fill in the required fields.'}
+                        reject(result);
+                    }
+
+                    let parameters = [req.body.title,req.body.request,rtoken.id,req.params.id]
+                    conexao.execSQLQuery("UPDATE `app`.`requests` SET `TITLE` = ?, `REQUEST` = ?,\
+                    `UPDATE_USER` = ?,`UPDATE_DATE` = NOW() WHERE `ID` = ? AND IND_STATUS = 1 AND STATUS = 0",parameters)
+                    .then(function(result){
+                        if(result.affectedRows > 0){
+                            logger.log('info', '[business-solictitationBO] update requests successfully.');
+                            let resultReturn = {status:204,body:""}
+                            return resolve(resultReturn);
+                        }else{
+                            logger.log('info', '[business-solictitationBO] update requests successfully.');
+                            let resultReturn = {status:204,body:""}
+                            return resolve(resultReturn);
+                        }
+                    }).catch(function (erro) {
+                        logger.log('error', '[business-solictitationBO] There was an error return the updateById.', erro);
+                        let result = {status:500,body:erro}
+                        return reject(result);
+                    });
+                }catch(error){
+                    let result = {status:500,body:error}
+                    return reject(result);
+                }
+            });
+        },
+
+        deleteById: function(req){
+            logger.log('info', '[business-solictitationBO] Method deleteById started.');
+            return new Promise(function(resolve, reject){
+                try{
+
+                    let token = req.headers.authorization;
+
+                    try{
+                        logger.log('info', '[business-solictitationBO] decoding token.');
+                        rtoken = jwthelper.decodedToken(token)
+                    }catch(error){
+                        logger.log('info', '[business-solictitationBO] error decoding the token.');
+                        let result = {status:500,body:error}
+                        return  reject(result);
+                    }
+
+                    if(!req.params.id){
+                        logger.log('info', '[business-solictitationBO] Required fields are empty.');
+                        let result = {status:422,body:'The id parameter is required'}
+                       return reject(result);
+                    }
+                    let parameters = [rtoken.id,req.params.id,]
+
+                    conexao.execSQLQuery("UPDATE `app`.`requests` SET `IND_STATUS` = 0, DELETE_USER = ?,\
+                     DELETE_DATE = NOW() WHERE ID = ? AND IND_STATUS = 1 AND STATUS = 0",parameters)
+                    .then(function(result){
+                        if(result.affectedRows > 0){
+                            logger.log('info', '[business-solictitationBO] The deleteById method deleted the requested id.');
+                            let resultReturn = {status:204,body:""}
+                            logger.log('info', '[business-solictitationBO] Method deleteById ending.');
+                            resolve(resultReturn);
+                        }else{
+                            let resultReturn = {status:204,body:""}
+                            return resolve(resultReturn);
+                        }
+                    }).catch(function (erro) {
+                        logger.log('error', '[business-solictitationBO] There was an error return the deleteById.', erro);
+                        let result = {status:500,body:erro}
+                        return reject(result);
+                    });
+                }catch(error){
+                    let result = {status:500,body:error}
+                    return reject(result);
                 }
             });
         },
