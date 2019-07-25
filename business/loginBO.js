@@ -10,7 +10,7 @@ module.exports = function() {
             return new Promise(function (resolve, reject) {
                 logger.log('info', '[business-loginBO] start method login.');
                 var parameter = [req.body.user,md5(req.body.password)]
-                conexao.execSQLQuery('SELECT ID,USER,LEVEL_ACESS,EMAIL FROM USERS WHERE USER = ? AND PASSWORD = ? AND IND_STATUS = 1',parameter)
+                conexao.execSQLQuery('SELECT ID,USER,LEVEL_ACESS,EMAIL FROM users WHERE USER = ? AND PASSWORD = ? AND IND_STATUS = 1',parameter)
                 .then(function(result){
                     if(result.length > 0){
                         logger.log('info', '[business-loginBO] user successfully validated.');
