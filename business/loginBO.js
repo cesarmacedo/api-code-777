@@ -10,18 +10,22 @@ module.exports = function() {
             return new Promise(function (resolve, reject) {
                 logger.log('info', '[business-loginBO] start method login.');
                 var parameter = [req.body.user,md5(req.body.password)]
-                conexao.execSQLQuery('SELECT ID,USER,LEVEL_ACESS,EMAIL FROM users WHERE USER = ? AND PASSWORD = ? AND IND_STATUS = 1',parameter)
+                conexao.execSQLQuery('SELECT ID,USER,LEVEL_ACESS,EMAIL,APARTMENT_BLOCK,APARTMENT_NUMBER FROM users WHERE USER = ? AND PASSWORD = ? AND IND_STATUS = 1',parameter)
                 .then(function(result){
                     if(result.length > 0){
                         logger.log('info', '[business-loginBO] user successfully validated.');
-                        var id = result[0].ID;
-                        var user = result[0].USER;
-                        var email = result[0].EMAIL;
-                        var levelAcess = result[0].LEVEL_ACESS;
-                        var token = jwt.sign({id,user,email,levelAcess}, process.env.SECRET, {
+                        let token ={};
+                        let id = result[0].ID;
+                        let user = result[0].USER;
+                        let email = result[0].EMAIL;
+                        let levelAcess = result[0].LEVEL_ACESS;
+                        token.user = user;
+                        token.apartmentBlock =  result[0].APARTMENT_BLOCK;
+                        token.apartmentNumber =  result[0].APARTMENT_NUMBER;
+                        token.token = jwt.sign({id,user,email,levelAcess}, process.env.SECRET, {
                         expiresIn: settings.jwtExpiresIn // expires in 5min
                         });
-                        let resultReturn = {status:200,body:token}
+                        let resultReturn = {status:200,body: token}
                         resolve(resultReturn);
                     }else{
                         logger.log('info', '[business-loginBO] User not found.');
