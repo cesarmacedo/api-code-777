@@ -20,8 +20,8 @@ module.exports = function() {
                         let email = result[0].EMAIL;
                         let levelAcess = result[0].LEVEL_ACESS;
                         token.user = user;
-                        token.apartmentBlock =  result[0].APARTMENT_BLOCK;
-                        token.apartmentNumber =  result[0].APARTMENT_NUMBER;
+                        token.apartmentBlock =  String(result[0].APARTMENT_BLOCK);
+                        token.apartmentNumber = String(result[0].APARTMENT_NUMBER);
                         token.token = jwt.sign({id,user,email,levelAcess}, process.env.SECRET, {
                         expiresIn: settings.jwtExpiresIn // expires in 5min
                         });
