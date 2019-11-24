@@ -9,7 +9,7 @@ module.exports = function() {
                 logger.log('info', '[business-userBO] Starting method register');
                 var parameter = [userRegistration.body.user,md5(userRegistration.body.password),userRegistration.body.email,
                 userRegistration.body.apartmentRegistration,userRegistration.body.cpf,userRegistration.body.name,
-                userRegistration.body.cpf,userRegistration.body.apartmentBlock,userRegistration.body.apartament_number,
+                userRegistration.body.cpf,userRegistration.body.apartmentBlock,userRegistration.body.apartamentNumber,
                 userRegistration.body.birthDate,]
         
                 _this.checkRegister(userRegistration.body.apartmentRegistration,userRegistration.body.cpf)
@@ -17,7 +17,7 @@ module.exports = function() {
                     let resultReturn;
                     if(checkRegisterUser.apartmentRegistration == 'Y' && checkRegisterUser.userRegistration == 'N'){
                         conexao.execSQLQuery("INSERT INTO APP.USERS (USER,PASSWORD,EMAIL,LEVEL_ACESS, \
-                            APARTMENT_RESGISTRATION_ID,NAME, CPF, APARTMENT_BLOCK, APARTMENT_NUMBER, BIRTH_DATE, CREATE_DATE, IND_STATUS) \
+                            APARTMENT_RESGISTRATION_ID,NAME, CPF, APARTMENT_BLOCK, APARTMENT_NUMBER, BIRTH_DATE, CREATE_DATE, CREATE_USER, IND_STATUS) \
                              VALUES (?,?,?,0,(SELECT ID FROM APARTMENT_RESGISTRATION WHERE APARTMENT_RESGISTRATION = ? AND CPF = ?) \
                              ,?,?,?,?,date_format(str_to_date(?,'%d/%m/%Y'),'%Y-%m-%d'),NOW(),1)",parameter)
                              .then(function(insertUser){
@@ -27,7 +27,9 @@ module.exports = function() {
                                     resolve(resultReturn)
                                  }
                              }).catch(function(error){
-                                reject(error);
+                                logger.log('info', '[business-userBO] erro: ',error);
+                                resultReturn = {status:500,body:'Erro ao criar usuario: ' + error}
+                                reject(resultReturn)
                              })
                     }
                     else if(checkRegisterUser.apartmentRegistration == 'Y' && checkRegisterUser.userRegistration == 'Y'){
