@@ -19,27 +19,27 @@ module.exports = function() {
                         conexao.execSQLQuery("INSERT INTO APP.USERS (USER,PASSWORD,EMAIL,LEVEL_ACESS, \
                             APARTMENT_RESGISTRATION_ID,NAME, CPF, APARTMENT_BLOCK, APARTMENT_NUMBER, BIRTH_DATE, CREATE_DATE, CREATE_USER, IND_STATUS) \
                              VALUES (?,?,?,0,(SELECT ID FROM APARTMENT_RESGISTRATION WHERE APARTMENT_RESGISTRATION = ? AND CPF = ?) \
-                             ,?,?,?,?,date_format(str_to_date(?,'%d/%m/%Y'),'%Y-%m-%d'),NOW(),1)",parameter)
+                             ,?,?,?,?,date_format(str_to_date(?,'%d/%m/%Y'),'%Y-%m-%d'),NOW(),0,1)",parameter)
                              .then(function(insertUser){
                                  if(insertUser.affectedRows){
                                     logger.log('info', '[business-userBO] User successfully registered');
-                                    resultReturn = {status:201,body:checkRegisterUser}
+                                    resultReturn = {status:201,body:'Successfully created user'}
                                     resolve(resultReturn)
                                  }
                              }).catch(function(error){
                                 logger.log('info', '[business-userBO] erro: ',error);
-                                resultReturn = {status:500,body:'Erro ao criar usuario: ' + error}
+                                resultReturn = {status:500,body:'Error creating user: ' + error}
                                 reject(resultReturn)
                              })
                     }
                     else if(checkRegisterUser.apartmentRegistration == 'Y' && checkRegisterUser.userRegistration == 'Y'){
                         logger.log('info', '[business-userBO] user already has registration');
-                        resultReturn = {status:409,body:'usuário já possui Cadastro.'}
+                        resultReturn = {status:409,body:'The user already has registration.'}
                         resolve(resultReturn)
                     }
                     else if(checkRegisterUser.apartmentRegistration == 'N' && checkRegisterUser.userRegistration == 'N'){
                         logger.log('info', '[business-userBO] user does not have apartment registration');
-                        resultReturn = {status:409,body:'O usuário não possui registro de apartamento.'}
+                        resultReturn = {status:409,body:'The user has no apartment registration.'}
                         resolve(resultReturn)
                     }
                 })
