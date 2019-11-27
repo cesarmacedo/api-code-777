@@ -19,7 +19,7 @@ class Conexao {
                     logger.log('info', 'An error occurred while performing the query');
                     reject(error);
                 }else{
-                    logger.log('info', 'The query returned a result',results);
+                    logger.log('info', 'The query returned a result');
                     connection.end();
                     logger.log('info', 'Ending connection to bank');
                     resolve(results)

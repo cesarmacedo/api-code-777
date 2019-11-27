@@ -7,7 +7,7 @@ module.exports = function() {
             chain
             .then(function(){
                 let token = req.headers.authorization;
-                logger.log('info','[jwtHelper] Validating authentication token');
+                logger.log('info','[jwtHelper] Start Validating authentication token');
                 if (!token || token === ''){
                     logger.error('[jwtHelper] The token does not exist or is empty');
                     throw {code: 403, body: 'The token does not exist or is empty'};

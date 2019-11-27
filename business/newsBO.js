@@ -1,13 +1,12 @@
 let tokenHelper = require('../helper/helperJWT');
 let DB = require("../config/conexao");
 let conexao = new DB;
-let jwthelper = new tokenHelper();
 
 module.exports = function() {
     return {
         add: function(req) {
             logger.log('info', '[business-newsnBO] Method add started.');
-            let token = req.headers.authorization
+
             return new Promise(function (resolve, reject) {
                 
                 if(!req.body.title || !req.body.news){
@@ -16,15 +15,6 @@ module.exports = function() {
                    return reject(result);
                 }
                 
-                try{
-                    logger.log('info', '[business-newsnBO] decoding token.');
-                    rtoken = jwthelper.decodedToken(token)
-                }catch(error){
-                    logger.log('info', '[business-newsnBO] error decoding the token.');
-                    let result = {status:500,body:error}
-                    return reject(result);
-                }
-
                 let parameter = [req.body.title,req.body.news,rtoken.id,1];
 
                 conexao.execSQLQuery('INSERT INTO NEWS (`TITLE`,`NEWS`,`CREATE_DATE`,`UPDATE_DATE`,\
@@ -111,17 +101,6 @@ module.exports = function() {
             return new Promise(function(resolve, reject){
                 try{
 
-                    let token = req.headers.authorization;
-
-                    try{
-                        logger.log('info', '[business-vacancyBO] decoding token.');
-                        rtoken = jwthelper.decodedToken(token)
-                    }catch(error){
-                        logger.log('info', '[business-vacancyBO] error decoding the token.');
-                        let result = {status:500,body:error}
-                        return  reject(result);
-                    }
-
                     if(!req.params.id){
                         logger.log('info', '[business-newsnBO] Required fields are empty.');
                         let result = {status:422,body:'É obrigatorio informar o Id'}
@@ -164,17 +143,6 @@ module.exports = function() {
             return new Promise(function(resolve, reject){
                 try{
                     
-                    let token = req.headers.authorization;
-                    
-                    try{
-                        logger.log('info', '[business-newsnBO] decoding token.');
-                        rtoken = jwthelper.decodedToken(token)
-                    }catch(error){
-                        logger.log('info', '[business-newsnBO] error decoding the token.');
-                        let result = {status:500,body:error}
-                        return reject(result);
-                    }
-
                     if(!req.body.title || !req.body.news){
                         logger.log('info', '[business-newsnBO] Required fields are empty.');
                         let result = {status:422,body:'Preencha os capos obrigatórios.'}
@@ -218,22 +186,6 @@ module.exports = function() {
             return new Promise(function(resolve, reject){
                 try{
 
-                    let token = req.headers.authorization;
-
-                    try{
-                        logger.log('info', '[business-newsnBO] decoding token.');
-                        rtoken = jwthelper.decodedToken(token)
-                    }catch(error){
-                        logger.log('info', '[business-newsnBO] error decoding the token.');
-                        let result = {status:500,body:error}
-                        return  reject(result);
-                    }
-
-                    if(!req.params.id){
-                        logger.log('info', '[business-newsnBO] Required fields are empty.');
-                        let result = {status:422,body:'The id parameter is required'}
-                       return reject(result);
-                    }
 
                     if(!Number.isInteger(req.params.id)){
                         logger.log('info', '[business-commentSolicitationBO] Field solicitationId is invalid');
