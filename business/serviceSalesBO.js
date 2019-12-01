@@ -5,6 +5,7 @@ let jwthelper = new tokenHelper();
 
 module.exports = function() {
     return {
+        
         getAllPagination: function(req){
             logger.log('info', '[business-serviceSalesBO] Method getAllPagination started.');
             return new Promise(function(resolve, reject){
@@ -14,6 +15,7 @@ module.exports = function() {
                         let result = {status:422,body:'The number of results and the page are required.'}
                         return reject(result);
                     }
+                    logger.log('info', `[business-serviceSalesBO] The Parameters send: ${req.query.results},  ${req.query.page},  ${req.query.title}`);
                     let parameters = [req.query.results,req.query.page,req.query.title]
                     conexao.execSQLQuery("CALL `app`.`Proc_Service_Sales_Pagination`(?,?,?)",parameters)
                     .then(function(result){

@@ -20,7 +20,7 @@ module.exports = function() {
                     if (error){
                         throw error;
                     }
-                    logger.log('[jwtHelper] The token is valid with payload token: ', JSON.stringify(decoded));
+                    logger.log('info',`[jwtHelper] The token is valid with payload token: ${JSON.stringify(decoded)}`);
                     next();
                 });
             })
