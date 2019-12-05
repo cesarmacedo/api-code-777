@@ -19,6 +19,7 @@ module.exports = function() {
                         let user = result[0].USER;
                         let email = result[0].EMAIL;
                         let levelAcess = result[0].LEVEL_ACESS;
+                        token.id = id.toString();
                         token.user = user;
                         token.apartmentBlock =  String(result[0].APARTMENT_BLOCK);
                         token.apartmentNumber = String(result[0].APARTMENT_NUMBER);

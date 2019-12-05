@@ -1,6 +1,7 @@
 let tokenHelper = require('../helper/helperJWT');
 let DB = require("../config/conexao");
 let conexao = new DB;
+let jwthelper = new tokenHelper();
 
 module.exports = function() {
     return {
@@ -14,6 +15,15 @@ module.exports = function() {
                     let result = {status:422,body:'Preencha os capos obrigatórios.'}
                    return reject(result);
                 }
+
+                try{
+                    logger.log('info', '[business-newsnBO] decoding token.');
+                    rtoken = jwthelper.decodedToken(token)
+                }catch(error){
+                    logger.log('info', '[business-newsnBO] error decoding the token.');
+                    let result = {status:500,body:error}
+                    return reject(result);
+                }                
                 
                 let parameter = [req.body.title,req.body.news,rtoken.id,1];
 
