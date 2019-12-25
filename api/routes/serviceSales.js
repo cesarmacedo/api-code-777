@@ -12,5 +12,8 @@ module.exports = function(app) {
     
     app.route('/v1/servicesales/:id')
         .get(helper.verifyToken,controller.getByUserId)
+
+    app.route('/v1/servicesales/:id')
+        .delete(helper.verifyToken,controller.deleteById)
     
 }

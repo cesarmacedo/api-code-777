@@ -140,7 +140,7 @@ module.exports = function() {
                     logger.log('info', '[business-serviceSalesBO] Parameters successfully validated.');
                     
                     conexao.execSQLQuery('SELECT ID,TITLE,PRICE,DESCRIPTION,IMAGE,WHATZAP FROM\
-                    services_sales WHERE CREATE_USER = ?',parameters)
+                    services_sales WHERE CREATE_USER = ? AND IND_STATUS = 1',parameters)
                     .then(function(result){
                         if(result.length){
                             logger.log('info', '[business-serviceSalesBO] Method getById return solictitation.');
@@ -157,6 +157,73 @@ module.exports = function() {
                         return reject(result);
                     });
                 }catch(error){
+                    let result = {status:500,body:error}
+                    return reject(result);
+                }
+            });
+        },
+
+        deleteById: function(req){
+            logger.log('info', '[business-serviceSalesBO] Method deleteById started.');
+            return new Promise(function(resolve, reject){
+                try{
+
+                    let token = req.headers.authorization
+
+                    logger.log('info', '[business-serviceSalesBO] Validating parameter.');
+
+                    if(!req.params.id){
+                        logger.log('info', '[business-serviceSalesBO] Required fields id are empty.');
+                        let result = {status:422,body:'id parameter is required'}
+                        return reject(result);
+                    }
+                   
+                    if(isNaN(parseFloat(req.params.id))){
+                        logger.log('info', '[[business-serviceSalesBO] Field solicitationId is invalid');
+                        let result = {status:422,body:'requestitationId must be an integer.'}
+                        return reject(result);
+                    }else{
+                        req.params.id =  parseInt(req.params.id)
+                    }
+
+                    logger.log('info', '[business-serviceSalesBO] Parameters successfully validated.');
+
+                    logger.log('info', '[business-serviceSalesBO] started validation token');
+
+                    try{
+                        logger.log('info', '[business-serviceSalesBO] Decoding token.');
+                        rtoken = jwthelper.decodedToken(token)
+                    }catch(error){
+                        logger.log('info', '[business-serviceSalesBO] error decoding the token.' + error);
+                        let result = {status:500,body:error}
+                        return reject(result);
+                    }
+
+                    logger.log('info', '[business-serviceSalesBO] decoding token successfully.');
+
+                    let parameters = [rtoken.id,req.params.id,]
+    
+                    logger.log('info', '[business-serviceSalesBO] End validations');
+
+                    conexao.execSQLQuery("UPDATE `app`.`services_sales` SET `IND_STATUS` = 0, DELETE_USER = ?,\
+                    DELETE_DATE = NOW() WHERE ID = ? AND IND_STATUS = 1",parameters)
+                    .then(function(result){
+                        if(result.affectedRows > 0){
+                            logger.log('info', '[business-serviceSalesBO] The deleteById method deleted the requested id.');
+                            let resultReturn = {status:204,body:""}
+                            logger.log('info', '[business-serviceSalesBO] Method deleteById ending.');
+                            resolve(resultReturn);
+                        }else{
+                            let resultReturn = {status:204,body:""}
+                            return resolve(resultReturn);
+                        }
+                    }).catch(function (erro) {
+                        logger.log('error', '[business-serviceSalesBO] There was an error return the deleteById.' +  erro);
+                        let result = {status:500,body:erro}
+                        return reject(result);
+                    });
+                }catch(error){
+                    logger.log('error', '[business-serviceSalesBO] There was an error return the deleteById.' +  error);
                     let result = {status:500,body:error}
                     return reject(result);
                 }
